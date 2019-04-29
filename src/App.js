@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import ReactLoading from 'react-loading'
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
 import './App.css'
 import logo from './assets/star-wars-logo.png'
+import MovieInfo from './components/MovieInfo'
 
 class App extends Component {
   constructor(props) {
@@ -128,7 +127,7 @@ class App extends Component {
 
         {error ? <p>{error}</p> : null}
 
-        {isLoadingMovies ? (
+        {isLoadingMovies ? ( // Check if movie list has been loaded yet, display loading indicator while waiting
           <div className="movie-loading">
             <p>Hold on while we fetch the movies for you!</p>
             <ReactLoading
@@ -139,6 +138,7 @@ class App extends Component {
             />
           </div>
         ) : (
+          // Render dropdown with movie titles
           <select
             name="movies-dropdown"
             id="movies-dropdown"
@@ -154,46 +154,17 @@ class App extends Component {
           </select>
         )}
 
-        {selectedMovieId ? (
+        {selectedMovieId ? ( // Check if user has selected a movie
           <div>
-            {selectedMovieCharacters.length > 0 ? (
-              <div className="movie-info">
-                <h2>{movies[selectedMovieId].title}</h2>
-                <ReactTable
-                  columns={[
-                    {
-                      Header: 'Name',
-                      accessor: 'name',
-                      filterable: false,
-                      width: 250,
-                      Footer: (
-                        <strong>Total: {selectedMovieCharacters.length}</strong>
-                      )
-                    },
-                    { Header: 'Gender', accessor: 'gender', width: 250 },
-                    {
-                      Header: 'Height',
-                      accessor: 'height',
-                      filterable: false,
-                      width: 250,
-                      Footer: (
-                        <strong>
-                          Sum: {sumOfCharacterHeights}
-                          cm (
-                          {this.getHeightInFeetAndInches(sumOfCharacterHeights)}
-                          )
-                        </strong>
-                      )
-                    }
-                  ]}
-                  data={selectedMovieCharacters}
-                  resolveData={data => data.map(row => row)}
-                  filterable
-                  defaultPageSize={movies[selectedMovieId].characters.length}
-                  showPagination={false}
-                />
-              </div>
-            ) : isLoadingCharacters ? (
+            {selectedMovieCharacters.length > 0 ? ( // If a movie has been selected, get the characters for the movie
+              <MovieInfo
+                movies={movies}
+                selectedMovieId={selectedMovieId}
+                selectedMovieCharacters={selectedMovieCharacters}
+                sumOfCharacterHeights={sumOfCharacterHeights}
+                getHeightInFeetAndInches={this.getHeightInFeetAndInches}
+              />
+            ) : isLoadingCharacters ? ( // Show loading indicator while characters are being fetched
               <ReactLoading
                 type={'bubbles'}
                 color={'#ffd700'}
@@ -203,6 +174,7 @@ class App extends Component {
             ) : null}
           </div>
         ) : (
+          // Show star wars logo if movie hasn't been selected
           <div>
             <img src={logo} alt="Star Wars Logo" height="250" width="350" />
           </div>
